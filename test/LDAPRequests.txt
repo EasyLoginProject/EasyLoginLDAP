@@ -1,0 +1,5 @@
+ldapsearch -H ldap://127.0.0.1:6389 -x -D "test" -w pass -b "dc=develop,dc=eu,dc=easylogin,dc=cloud" username=test
+ldapsearch -H ldap://127.0.0.1:6389 -x -D "test" -w pass -b "dc=develop,dc=eu,dc=easylogin,dc=cloud" '(&(objecClass=inetOrgPerson)(uid=test))'
+ldapsearch -H ldap://127.0.0.1:6389 -x -D "test" -w pass -b "dc=develop,dc=eu,dc=easylogin,dc=cloud" '(&(objecClass=inetOrgPerson)(|(uid=test)(mail=test*)))'
+ldapsearch -H ldap://127.0.0.1:6389 -x -D "test" -w pass -b "dc=develop,dc=eu,dc=easylogin,dc=cloud" '(&(objecClass=inetOrgPerson)(|(uid=test)(mail=*test*)))'
+ldapsearch -H ldap://127.0.0.1:6389 -x -D "test" -w pass -b "dc=develop,dc=eu,dc=easylogin,dc=cloud" '(&(objecClass=inetOrgPerson)(|(uid=test)(mail=*test)))'

@@ -79,22 +79,29 @@ sub bind {
 	if ($reqData->{'name'}) {
 		my $jsonRequest = encode_json $reqData;
 		
+		$self->{'ldapGatewayDaemon'}->Log('debug', "JSON Object used for authentication: ".$jsonRequest);
 		my $restClientWithAnswer = restPostAtPathWithJSONObject("/auth", $jsonRequest);
 		
 		my $responseCode = $restClientWithAnswer->responseCode();
 
 		if ($responseCode == 200) {
 			### TODO: grab the auth token from responseHeader
+
+			$self->{'ldapGatewayDaemon'}->Log('notice', "LDAP BIND OK");
 			return ldapReturnStruct(LDAP_SUCCESS);
 		} elsif ($responseCode == 401) {
+			$self->{'ldapGatewayDaemon'}->Log('notice', "LDAP BIND NOT OK");
 			return ldapReturnStruct(LDAP_INVALID_CREDENTIALS);
 		}
 		
+		$self->{'ldapGatewayDaemon'}->Log('notice', "LDAP BIND KO");
 		return ldapReturnStruct(LDAP_OPERATIONS_ERROR);
 	} else {
+		$self->{'ldapGatewayDaemon'}->Log('notice', "LDAP BIND NOT SENT");
 		return ldapReturnStruct(LDAP_INVALID_CREDENTIALS);
 	}
 	
+	$self->{'ldapGatewayDaemon'}->Log('notice', "LDAP BIND KO KO");
 	return ldapReturnStruct(LDAP_OPERATIONS_ERROR);
 }
 
@@ -145,6 +152,7 @@ sub searchForBaseContainer {
 		my $entry = Net::LDAP::Entry->new;
 		$entry->dn($baseObject->{dn});
 		my @attributes = @{$reqData->{"attributes"}};
+		@attributes = grep { $_ ne "dn" } @attributes;
 
 		my %attributesAsHash = map { $_ => 1 } @attributes;
 		if(exists($attributesAsHash{"*"})) {
@@ -204,6 +212,7 @@ sub searchFoFirstLevelContainers {
 			$entry->dn($record->{dn});
 			delete $record->{dn};
 			my @attributes = @{$reqData->{"attributes"}};
+			@attributes = grep { $_ ne "dn" } @attributes;
 
 			my %attributesAsHash = map { $_ => 1 } @attributes;
 			if(exists($attributesAsHash{"*"})) {
@@ -213,8 +222,10 @@ sub searchFoFirstLevelContainers {
 			if (@attributes) {
 				$self->{'ldapGatewayDaemon'}->Log('info', "Translation will be filterred to return only requested attributes");
 				foreach my $key (@attributes) {
-					foreach my $value ($record->{$key}) {
-						$entry->add ($key => $value);
+					if (length $key > 0) {
+						foreach my $value ($record->{$key}) {
+							$entry->add ($key => $value);
+						}
 					}
 				}
 			} else {
@@ -267,6 +278,7 @@ sub searchOnSubTree {
 			$entry->dn($record->{dn});
 			delete $record->{dn};
 			my @attributes = @{$reqData->{"attributes"}};
+			@attributes = grep { $_ ne "dn" } @attributes;
 
 			my %attributesAsHash = map { $_ => 1 } @attributes;
 			if(exists($attributesAsHash{"*"})) {
@@ -276,8 +288,10 @@ sub searchOnSubTree {
 			if (@attributes) {
 				$self->{'ldapGatewayDaemon'}->Log('info', "Translation will be filterred to return only requested attributes");
 				foreach my $key (@attributes) {
-					foreach my $value ($record->{$key}) {
-						$entry->add ($key => $value);
+					if (length $key > 0) {
+						foreach my $value ($record->{$key}) {
+							$entry->add ($key => $value);
+						}
 					}
 				}
 			} else {
@@ -324,6 +338,7 @@ sub searchRootDSE {
 		my $entry = Net::LDAP::Entry->new;
 		$entry->dn("");
 		my @attributes = @{$reqData->{"attributes"}};
+		@attributes = grep { $_ ne "dn" } @attributes;
 
 		my %attributesAsHash = map { $_ => 1 } @attributes;
 		if(exists($attributesAsHash{"*"})) {
@@ -333,8 +348,10 @@ sub searchRootDSE {
 		if (@attributes) {
 			$self->{'ldapGatewayDaemon'}->Log('info', "Translation will be filterred to return only requested attributes");
 			foreach my $key (@attributes) {
-				foreach my $value ($rootDSE->{$key}) {
-					$entry->add ($key => $value);
+				if (length $key > 0) {
+					foreach my $value ($rootDSE->{$key}) {
+						$entry->add ($key => $value);
+					}
 				}
 			}
 		} else {

@@ -13,6 +13,9 @@ use Net::Daemon;
 use base 'Net::LDAP::Server';
 use fields qw(ldapGatewayDaemon);
 
+ our $server_base_url = 'http://develop.eu.easylogin.cloud';
+# our $server_base_url = 'http://127.0.0.1:8080';
+
 # Constructor
 sub new {
 	my $class = shift;
@@ -46,7 +49,7 @@ sub restPostAtPathWithJSONObject {
 	my $client = REST::Client->new();
 	
 	### TODO: use configuration system (CloudFoundry supported?) to find the REST API
-	my $request_url =  'http://127.0.0.1:8080/ldap/v1'.$path;
+	my $request_url =  $server_base_url.'/ldap/v1'.$path;
 
 	### TODO: if available, add the auth token in authentication headers
 	$client->POST($request_url, $jsonBody, { "Content-type" => 'application/json', "Accept" => 'application/json'}); 
@@ -59,7 +62,7 @@ sub restGetPath {
 	my $client = REST::Client->new();
 	
 	### TODO: use configuration system (CloudFoundry supported?) to find the REST API
-	my $request_url =  'http://127.0.0.1:8080/ldap/v1'.$path;
+	my $request_url =  $server_base_url.'/ldap/v1'.$path;
 
 	### TODO: if available, add the auth token in authentication headers
 	$client->GET($request_url, { "Accept" => 'application/json'}); 

@@ -13,8 +13,7 @@ use Net::Daemon;
 use base 'Net::LDAP::Server';
 use fields qw(ldapGatewayDaemon);
 
-our $server_base_url = 'http://develop.eu.easylogin.cloud';
-# our $server_base_url = 'http://127.0.0.1:8080';
+our $server_base_url = $ENV{'EASYLOGIN_BASE_URL'}; 
 
 # Constructor
 sub new {
@@ -25,7 +24,7 @@ sub new {
     
     $self->{'ldapGatewayDaemon'} = $daemon;
     
-    $self->{'ldapGatewayDaemon'}->Log('notice', "New instance of LDAPGatewayHandler created");
+    $self->{'ldapGatewayDaemon'}->Log('notice', "New instance of LDAPGatewayHandler created for '".$server_base_url."'");
     
     return $self;
 }
@@ -156,7 +155,7 @@ sub search {
                 }
             } else {
                 delete $record->{hasSubordinates};
-                foreach my $key (keys $record) {
+                foreach my $key (keys %{ $record }) {
                     foreach my $value ($record->{$key}) {
                         $entry->add ($key => $value);
                     }

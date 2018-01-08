@@ -15,6 +15,6 @@ RUN cpan install Net::LDAP::Server
 RUN cpan install Net::Daemon
 RUN cpan install REST::Client
 
-EXPOSE 389
+EXPOSE 6389
 
 CMD "/usr/local/EasyLoginLDAP/easyloginldap"

@@ -1,5 +1,4 @@
 FROM perl:latest
-ARG BASE_URL
 
 COPY src /usr/local/EasyLoginLDAP
 WORKDIR /usr/local/EasyLoginLDAP
@@ -15,6 +14,6 @@ RUN cpan install Net::LDAP::Server
 RUN cpan install Net::Daemon
 RUN cpan install REST::Client
 
-EXPOSE 6389
+EXPOSE 389
 
-CMD "/usr/local/EasyLoginLDAP/easyloginldap"
+ENTRYPOINT ["/usr/local/EasyLoginLDAP/easyloginldap"]

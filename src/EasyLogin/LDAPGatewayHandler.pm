@@ -9,6 +9,7 @@ use Net::LDAP::Entry;
 use JSON;
 use REST::Client;
 use Net::Daemon;
+use List::MoreUtils qw(uniq);
 
 use base 'Net::LDAP::Server';
 use fields qw(ldapGatewayDaemon);
@@ -138,6 +139,7 @@ sub search {
             delete $record->{dn};
             my @attributes = @{$reqData->{"attributes"}};
             @attributes = grep { $_ ne "dn" } @attributes;
+            @attributes = uniq @attributes;
             
             my %attributesAsHash = map { $_ => 1 } @attributes;
             if(exists($attributesAsHash{"*"})) {

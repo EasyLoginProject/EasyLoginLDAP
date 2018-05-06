@@ -13,6 +13,7 @@ RUN cpan install Net::LDAP
 RUN cpan install Net::LDAP::Server
 RUN cpan install Net::Daemon
 RUN cpan install REST::Client
+RUN cpan install List::MoreUtils
 
 EXPOSE 389
 
